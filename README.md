@@ -4,6 +4,23 @@ Presentación web de 5 láminas (protocolo de oxígeno domiciliario) lista para
 servirse **online** y abrirse desde cualquier celular (Android **e iOS**) con
 solo compartir una **URL** por WhatsApp.
 
+## 🔗 URL en vivo (compartir esta por WhatsApp)
+
+**https://bot-cc-cof1.github.io/protocolo-oxigenoterapia/**
+
+Hosteada en GitHub Pages (HTTPS válido, gratis, estable). Repo:
+`https://github.com/bot-cc-cof1/protocolo-oxigenoterapia`.
+
+### Cómo actualizar el contenido
+
+Editar `docs/index.html`, luego:
+
+```bash
+git add -A && git commit -m "actualiza protocolo" && git push
+```
+
+GitHub Pages reconstruye solo en ~1-2 min. (Sin necesidad de tocar el VPS.)
+
 ## Estructura
 
 ```
