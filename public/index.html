@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- viewport-fit=cover habilita las safe-area-inset del iPhone (notch / home indicator) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    <title>Protocolo Oxigenoterapia - TEVEUCI</title>
+    <!-- Tailwind CSS para diseño moderno y adaptativo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* SETUP BASE */
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent; /* Elimina destello gris al tocar en iOS */
+        }
+
+        html {
+            /* Fallback antiguo para iOS < 15.4 (altura real del viewport visible) */
+            height: -webkit-fill-available;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Lato', sans-serif;
+            /* Evita rebote de scroll molesto en iOS */
+            overscroll-behavior-y: none;
+
+            /* --- ARREGLO PRINCIPAL iOS ---
+               100vh en Safari iOS NO es la altura visible (cuenta el área bajo la barra).
+               Usamos capas de fallback: vh -> fill-available -> dvh (la moderna y correcta). */
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            min-height: 100dvh;
+
+            /* Espacio inferior para que el footer fijo no tape el contenido,
+               respetando la barra de inicio del iPhone (safe-area). */
+            padding-bottom: calc(96px + env(safe-area-inset-bottom));
+        }
+
+        /* Respetar el notch lateral en horizontal */
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(0.75rem, env(safe-area-inset-left));
+                padding-right: max(0.75rem, env(safe-area-inset-right));
+            }
+        }
+
+        /* Control de visualización y transiciones fluidas de Diapositiva */
+        .slide-container {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            -webkit-overflow-scrolling: touch; /* Scroll suave e inercial en iOS */
+        }
+
+        .slide-container.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Ajuste para inputs en iOS: desactiva estilos nativos agresivos */
+        input[type="number"], input[type="password"] {
+            -webkit-appearance: none;
+            appearance: none;
+            /* iOS fuerza zoom si la fuente es menor a 16px. Con 18px+ lo prevenimos */
+            font-size: 18px !important;
+        }
+
+        /* Footer fijo: respeta la safe-area inferior del iPhone */
+        .nav-footer {
+            padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+        }
+
+        /* Animación suave para la pantalla de bloqueo */
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        .pulse-animation {
+            animation: pulse-slow 2.5s infinite;
+        }
+    </style>
+</head>
+<!-- Quitamos min-h-screen (100vh) de aquí: lo maneja el CSS de arriba con dvh.
+     items-start (no items-center) evita que en iPhones cortos se corte la parte superior de la lámina. -->
+<body class="flex flex-col bg-slate-900 p-3 sm:p-6 md:p-10">
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="w-full max-w-7xl mx-auto flex-grow flex items-start sm:items-center justify-center">
+
+        <!-- DIAPOSITIVA 1: PORTADA -->
+        <div class="slide-container active w-full flex-col justify-between bg-slate-950 border border-slate-800 rounded-2xl p-5 sm:p-8 md:p-12 shadow-2xl relative overflow-y-auto min-h-[550px] md:min-h-[650px] pb-24 md:pb-12" id="slide1">
+            <div class="relative z-10 my-auto">
+                <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold font-['Poppins'] tracking-tight text-white leading-tight mb-4">
+                    Protocolo Operativo de <br class="hidden sm:block">
+                    <span class="text-sky-400 bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">Oxígeno Domiciliario</span>
+                </h1>
+                <p class="text-sm sm:text-lg md:text-xl text-slate-400 max-w-3xl mb-8 leading-relaxed">
+                    Gestión integral de suministros, cálculo automatizado de autonomía y reglas de seguridad técnica para la hospitalización en domicilio.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-4xl">
+                    <div class="bg-slate-900/80 border border-slate-800/60 p-5 rounded-xl flex flex-col justify-between gap-3">
+                        <h3 class="text-sky-400 text-sm md:text-base font-bold uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-truck-fast"></i> SLA DE ENTREGA
+                        </h3>
+                        <div>
+                            <p class="text-2xl md:text-3xl font-extrabold text-white">48 Horas Hábiles</p>
+                            <p class="text-xs sm:text-sm text-slate-400 mt-1">Plazo máximo estipulado de reposición desde la confirmación del pedido.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-800/60 p-5 rounded-xl flex flex-col justify-between gap-3">
+                        <h3 class="text-sky-400 text-sm md:text-base font-bold uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-envelope"></i> VÍA PRINCIPAL
+                        </h3>
+                        <div>
+                            <p class="text-xl md:text-2xl font-extrabold text-white">Correo Operaciones</p>
+                            <p class="text-xs sm:text-sm text-slate-400 mt-1">Canal oficial de solicitud emitido entre el equipo de Enfermería/Operaciones y el Proveedor.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-5 right-5 text-xs sm:text-sm text-slate-600 font-bold z-10">LÁMINA 1 / 5</div>
+        </div>
+
+        <!-- DIAPOSITIVA 2: CANALES Y GESTIÓN -->
+        <div class="slide-container w-full flex-col justify-between bg-slate-950 border border-slate-800 rounded-2xl p-5 sm:p-8 md:p-12 shadow-2xl relative overflow-y-auto min-h-[550px] md:min-h-[650px] pb-24 md:pb-12" id="slide2">
+            <div class="relative z-10 w-full">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold font-['Poppins'] text-white border-l-4 border-sky-500 pl-4 mb-6 sm:mb-8">
+                    Canales Oficiales de Gestión
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-900/50 border border-slate-800 p-5 sm:p-6 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-sky-400 text-lg sm:text-xl font-bold mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i> 1. Canal de Solicitud
+                            </h3>
+                            <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-4">
+                                Las recargas son solicitadas a Air Liquide exclusivamente a través de <strong>correo electrónico</strong> enviado por el equipo de operaciones o la enfermera de turno (fines de semana).
+                            </p>
+                        </div>
+                        <div class="bg-sky-500/10 border-l-4 border-sky-400 p-4 rounded-r-lg mt-3">
+                            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                                <strong>PASO PREVIO:</strong> Notificar a enfermera del domicilio en primera instancia. Fines de semana a enfermera de turno. Si no hay respuesta: Escalar de inmediato a Paulina Lopez <span class="text-sky-300 font-bold whitespace-nowrap">+569 4431 4129</span>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 p-5 sm:p-6 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-emerald-400 text-lg sm:text-xl font-bold mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-file-invoice"></i> 2. Trazabilidad
+                            </h3>
+                            <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-4">
+                                Air Liquide confirma en un plazo breve la solicitud con un <strong>número de folio</strong>. Este folio es asignado a un transportista en ruta.
+                            </p>
+                        </div>
+                        <div class="bg-emerald-500/10 border-l-4 border-emerald-400 p-4 rounded-r-lg mt-3">
+                            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-bold">
+                                El folio recibido constituye el único respaldo válido ante el proveedor. Operaciones y Gobierno Clínico reciben en respuesta a la solicitud este folio para poder hacer seguimiento en caso de cualquier eventualidad.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-5 right-5 text-xs sm:text-sm text-slate-600 font-bold z-10">LÁMINA 2 / 5</div>
+        </div>
+
+        <!-- DIAPOSITIVA 3: REGLAS TÉCNICAS -->
+        <div class="slide-container w-full flex-col justify-between bg-slate-950 border border-slate-800 rounded-2xl p-5 sm:p-8 md:p-12 shadow-2xl relative overflow-y-auto min-h-[550px] md:min-h-[650px] pb-24 md:pb-12" id="slide3">
+            <div class="relative z-10 w-full">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold font-['Poppins'] text-white border-l-4 border-sky-500 pl-4 mb-6 sm:mb-8">
+                    Reglas de Seguridad (Cilindro 10m³)
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-900/50 border border-slate-800 p-5 sm:p-6 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-sky-400 text-lg sm:text-xl font-bold mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-info"></i> Regla General
+                            </h3>
+                            <p class="text-xl sm:text-2xl font-bold text-white mb-2">1 Cilindro a 1 LPM</p>
+                            <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-4">
+                                Se debe tramitar la solicitud de recarga de forma estricta y oportuna al marcar los <strong>50 BAR</strong> en el manómetro.
+                            </p>
+                        </div>
+                        <div class="bg-sky-500/10 border-l-4 border-sky-400 p-4 rounded-r-lg mt-3">
+                            <p class="text-xs sm:text-sm text-slate-200">
+                                Autonomía residual equivalente a: <strong>41.7 Horas</strong> de resguardo. Cubre el margen de despacho holgadamente.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-950/10 border border-red-900/50 p-5 sm:p-6 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-red-400 text-lg sm:text-xl font-bold mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Regla Especial
+                            </h3>
+                            <p class="text-xl sm:text-2xl font-bold text-white mb-2">1 Cilindro a 2 LPM (o superior)</p>
+                            <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-4">
+                                Si el paciente cuenta con un solo cilindro de 10m³ y está con un flujo de 2 LPM o más, se debe hacer la solicitud de <strong>URGENCIA al marcar los 100 BAR</strong>.
+                            </p>
+                        </div>
+                        <div class="bg-red-500/10 border-l-4 border-red-500 p-4 rounded-r-lg mt-3">
+                            <p class="text-xs sm:text-sm text-red-200">
+                                <strong class="text-white">CRÍTICO:</strong> A un flujo de 2 LPM la velocidad de consumo se duplica. Solicitar a los 100 BAR conserva el margen de seguridad de 41.7 horas de autonomía.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-5 right-5 text-xs sm:text-sm text-slate-600 font-bold z-10">LÁMINA 3 / 5</div>
+        </div>
+
+        <!-- DIAPOSITIVA 4: CALCULADORA -->
+        <div class="slide-container w-full flex-col justify-between bg-slate-950 border border-slate-800 rounded-2xl p-5 sm:p-8 md:p-12 shadow-2xl relative overflow-y-auto min-h-[550px] md:min-h-[650px] pb-24 md:pb-12" id="slide4">
+            <div class="relative z-10 w-full">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold font-['Poppins'] text-white border-l-4 border-sky-500 pl-4 mb-6 sm:mb-8">
+                    Calculadora de Autonomía Residual
+                </h2>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <!-- Formulario de la Calculadora -->
+                    <div class="lg:col-span-5 bg-slate-900 border border-slate-800 p-5 sm:p-6 rounded-2xl">
+                        <div class="grid grid-cols-2 lg:grid-cols-1 gap-4 mb-4">
+                            <div class="input-group">
+                                <label class="block text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Presión (BAR)</label>
+                                <!-- Se forzó text-xl para desarmar el autozoom de iOS Safari en inputs de número -->
+                                <input type="number" inputmode="decimal" id="barInput" value="50" min="0" max="300" oninput="calculateAutonomy()" class="w-full bg-slate-950 border-2 border-slate-800 hover:border-slate-700 focus:border-sky-500 rounded-xl px-4 py-2.5 text-xl font-bold text-white outline-none transition-all">
+                            </div>
+                            <div class="input-group">
+                                <label class="block text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Flujo (LPM)</label>
+                                <input type="number" inputmode="decimal" id="lpmInput" value="1" min="0.1" step="0.5" max="30" oninput="calculateAutonomy()" class="w-full bg-slate-950 border-2 border-slate-800 hover:border-slate-700 focus:border-sky-500 rounded-xl px-4 py-2.5 text-xl font-bold text-white outline-none transition-all">
+                            </div>
+                        </div>
+                        <div class="result-display bg-slate-950 rounded-xl p-4 text-center border-2 border-sky-400 transition-all" id="resBox">
+                            <span class="block text-[10px] tracking-widest text-slate-400 font-bold uppercase">AUTONOMÍA ESTIMADA</span>
+                            <span class="text-4xl sm:text-5xl font-black text-sky-400 my-1 block" id="hourRes">41.7</span>
+                            <span class="block text-xs text-slate-400 font-semibold">HORAS RESTANTES</span>
+                        </div>
+                    </div>
+
+                    <!-- Información y Leyenda -->
+                    <div class="lg:col-span-7 bg-slate-900/40 border border-slate-800 p-5 sm:p-6 rounded-2xl flex flex-col justify-between h-full">
+                        <div>
+                            <h3 class="text-sky-400 text-lg font-bold mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-nodes"></i> Lógica del Algoritmo
+                            </h3>
+                            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                                Herramienta para calcular la duración matemática exacta sobre la base hidráulica de un <strong>cilindro de alta capacidad de 10m³ (volumen de agua de 50L)</strong>.
+                            </p>
+                        </div>
+                        <ul class="space-y-2.5 text-sm sm:text-base">
+                            <li class="flex items-center gap-2.5"><span class="w-3 h-3 rounded-full bg-emerald-500 shrink-0"></span><span class="text-slate-300"><strong class="text-white">Verde (≥ 48h):</strong> Rango clínico completamente seguro.</span></li>
+                            <li class="flex items-center gap-2.5"><span class="w-3 h-3 rounded-full bg-amber-500 shrink-0"></span><span class="text-slate-300"><strong class="text-white">Ámbar (24h - 48h):</strong> Alerta de seguridad. Emitir solicitud de recarga.</span></li>
+                            <li class="flex items-center gap-2.5"><span class="w-3 h-3 rounded-full bg-red-500 shrink-0"></span><span class="text-slate-300"><strong class="text-white">Rojo (&lt; 24h):</strong> Riesgo inminente. El cilindro se vaciará pronto.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-5 right-5 text-xs sm:text-sm text-slate-600 font-bold z-10">LÁMINA 4 / 5</div>
+        </div>
+
+        <!-- DIAPOSITIVA 5: LÍNEA DE EMERGENCIA RESTRINGIDA -->
+        <div class="slide-container w-full flex-col justify-between bg-slate-950 border border-slate-800 rounded-2xl p-5 sm:p-8 md:p-12 shadow-2xl relative overflow-y-auto min-h-[550px] md:min-h-[650px] pb-24 md:pb-12" id="slide5">
+            <div class="relative z-10 w-full flex-grow flex flex-col justify-center">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold font-['Poppins'] text-white border-l-4 border-sky-500 pl-4 mb-6 sm:mb-8">
+                    Canal Interno de Emergencias Clínicas
+                </h2>
+
+                <!-- Estado 1: Bloqueado -->
+                <div id="lockedArea" class="flex flex-col items-center justify-center text-center py-4">
+                    <div class="lock-icon text-red-500 text-5xl md:text-6xl mb-4 pulse-animation">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="text-white text-xl sm:text-2xl font-bold mb-2">Acceso Confidencial Restringido</h3>
+                    <p class="text-slate-400 text-xs sm:text-sm max-w-md mb-6 leading-relaxed">
+                        Esta información es de uso exclusivo interno para el equipo médico y clínico. Por favor ingrese la clave autorizada para visualizar los contactos.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3 items-center justify-center w-full max-w-sm">
+                        <!-- Clave con text-lg (18px) en móvil para bloquear el zoom involuntario de iOS -->
+                        <input type="password" id="passCode" placeholder="CLAVE" onkeydown="checkKey(event)" class="w-full sm:w-44 bg-slate-900 border-2 border-slate-800 hover:border-slate-700 focus:border-sky-500 rounded-xl px-4 py-2.5 text-center font-bold text-white outline-none tracking-widest text-lg transition-all">
+                        <button onclick="verifyPassword()" class="w-full sm:w-auto bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl transition-all select-none">Desbloquear</button>
+                    </div>
+                    <p id="errorMsg" class="text-red-400 text-xs sm:text-sm font-semibold mt-4 hidden">
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> Clave incorrecta. Inténtelo de nuevo.
+                    </p>
+                </div>
+
+                <!-- Estado 2: Desbloqueado -->
+                <div id="unlockedArea" class="hidden grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                    <div class="bg-sky-500/5 border border-sky-500/30 p-5 sm:p-6 rounded-2xl flex flex-col justify-center">
+                        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest text-center mb-2">CALL CENTER DE SOPORTE CONTINUO</p>
+                        <p class="text-3xl sm:text-5xl font-black text-white text-center tracking-tight leading-none my-3">600 426 4114</p>
+                        <p class="text-emerald-400 font-bold text-center text-sm sm:text-base mt-2 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-circle-check"></i> Disponible 24 Horas / 7 Días de la semana
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 p-5 sm:p-6 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-sky-400 text-lg font-bold mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-info"></i> Usos Autorizados
+                            </h3>
+                            <ul class="space-y-2 text-slate-300 text-xs sm:text-sm leading-relaxed">
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-sky-400 mt-1"></i> <span>Reportar de forma urgente <strong>emergencias o fallas técnicas</strong> de los equipos.</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-sky-400 mt-1"></i> <span>Realizar solicitudes de <strong>recargas críticas de urgencia</strong> de gases.</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-sky-400 mt-1"></i> <span>Reportar variaciones de flujo que demanden mayor consumo.</span></li>
+                            </ul>
+                        </div>
+                        <p class="text-[11px] text-slate-500 italic mt-4 border-t border-slate-800/80 pt-3">
+                            *Siempre que llame de emergencia, notifique inmediatamente después al equipo de Operaciones de TEVEUCI.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="absolute bottom-5 right-5 text-xs sm:text-sm text-slate-600 font-bold z-10">LÁMINA 5 / 5</div>
+        </div>
+
+    </div>
+
+    <!-- CONTROLES DE NAVEGACIÓN -->
+    <div class="nav-footer fixed bottom-0 left-0 right-0 bg-slate-950/95 border-t border-slate-800 px-4 py-3 sm:py-4 flex justify-between gap-4 z-40 backdrop-blur-md">
+        <button class="nav-btn bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold px-5 py-2.5 rounded-xl transition-all select-none text-sm sm:text-base" id="prevBtn" onclick="changeSlide(-1)">Anterior</button>
+        <button class="nav-btn primary bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl transition-all flex items-center gap-2 select-none text-sm sm:text-base ml-auto" id="nextBtn" onclick="changeSlide(1)">Siguiente Diapositiva</button>
+    </div>
+
+    <!-- SCRIPT DE INTERACTIVIDAD -->
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 5;
+        let isUnlocked = false; // Estado de la clave de seguridad
+
+        function changeSlide(dir) {
+            document.getElementById(`slide${currentSlide}`).classList.remove('active');
+            currentSlide += dir;
+            if (currentSlide > totalSlides) currentSlide = 1;
+            if (currentSlide < 1) currentSlide = totalSlides;
+            document.getElementById(`slide${currentSlide}`).classList.add('active');
+
+            // Al cambiar de lámina, subir el scroll al inicio (evita quedar "a medias" en iOS)
+            window.scrollTo(0, 0);
+            const activeSlide = document.getElementById(`slide${currentSlide}`);
+            if (activeSlide) activeSlide.scrollTop = 0;
+
+            // Actualizar botones de navegación
+            document.getElementById('prevBtn').style.visibility = (currentSlide === 1) ? 'hidden' : 'visible';
+            document.getElementById('nextBtn').innerHTML = (currentSlide === totalSlides) ? 'Volver al Inicio' : 'Siguiente';
+
+            // Al entrar a la lámina 5, enfocar el input de contraseña si no está desbloqueada
+            if (currentSlide === 5 && !isUnlocked) {
+                setTimeout(() => {
+                    document.getElementById('passCode').focus();
+                }, 100);
+            }
+        }
+
+        // Permitir presionar "Enter" para verificar clave de seguridad
+        function checkKey(e) {
+            if (e.key === 'Enter') {
+                verifyPassword();
+            }
+        }
+
+        // Validación de la contraseña de la 5ta Lámina
+        function verifyPassword() {
+            const code = document.getElementById('passCode').value;
+            const errorElement = document.getElementById('errorMsg');
+
+            if (code === "TEVEUCI00") {
+                isUnlocked = true;
+                document.getElementById('lockedArea').classList.add('hidden');
+                document.getElementById('unlockedArea').classList.remove('hidden');
+                document.getElementById('unlockedArea').classList.add('grid');
+                errorElement.classList.add('hidden');
+
+                // Forzar a iOS Safari a restablecer cualquier scroll extraño por teclado virtual
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                errorElement.classList.remove('hidden');
+                const input = document.getElementById('passCode');
+                input.style.borderColor = '#ef4444';
+                setTimeout(() => {
+                    input.style.borderColor = '#334155';
+                }, 1000);
+            }
+        }
+
+        // Lógica matemática de la Calculadora de Autonomía (Lámina 4)
+        function calculateAutonomy() {
+            const bar = parseFloat(document.getElementById('barInput').value) || 0;
+            const lpm = parseFloat(document.getElementById('lpmInput').value) || 0.1;
+            const resBox = document.getElementById('resBox');
+            const hourRes = document.getElementById('hourRes');
+
+            // Fórmula física estándar para cilindros de 10m3 (volumen hidráulico de 50 litros de agua): (BAR * 50) / (LPM * 60)
+            const hours = (bar * 50) / (lpm * 60);
+            const formatted = hours.toFixed(1);
+
+            hourRes.innerText = formatted;
+
+            // Semáforo dinámico de riesgo clínico
+            if (hours >= 48) {
+                resBox.style.borderColor = '#10b981';
+                hourRes.style.color = '#10b981';
+            } else if (hours >= 24) {
+                resBox.style.borderColor = '#f59e0b';
+                hourRes.style.color = '#f59e0b';
+            } else {
+                resBox.style.borderColor = '#ef4444';
+                hourRes.style.color = '#ef4444';
+            }
+        }
+
+        // Inicializar interfaz al arrancar
+        window.onload = function () {
+            document.getElementById('prevBtn').style.visibility = 'hidden';
+            calculateAutonomy();
+        };
+    </script>
+</body>
+</html>
