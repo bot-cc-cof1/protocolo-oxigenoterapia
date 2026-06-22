@@ -8,11 +8,14 @@ solo compartir una **URL** por WhatsApp.
 
 ```
 protocolo-oxigenoterapia/
-├── public/
+├── docs/
 │   └── index.html      # La presentación (versión corregida para iOS)
-├── deploy.sh           # Sincroniza public/ al VPS por rsync
+├── deploy.sh           # Sincroniza docs/ al VPS por rsync
 └── README.md
 ```
+
+> Se usa `docs/` (no `public/`) porque GitHub Pages sirve esa carpeta de forma
+> nativa sin necesidad de workflows ni permisos extra.
 
 ## Clave de la lámina 5 (acceso restringido)
 
@@ -40,7 +43,7 @@ El original funcionaba en Android pero "se desconfiguraba" en iPhone. Causas y f
 ## Probar localmente
 
 ```bash
-cd public && python3 -m http.server 8080
+cd docs && python3 -m http.server 8080
 # abrir http://localhost:8080
 ```
 
@@ -52,5 +55,5 @@ Editar las variables al inicio de `deploy.sh` (host, ruta destino) y ejecutar:
 ./deploy.sh
 ```
 
-Esto copia `public/` al VPS por `rsync` sobre SSH. Allí basta con servir esa
+Esto copia `docs/` al VPS por `rsync` sobre SSH. Allí basta con servir esa
 carpeta con nginx / caddy / `python3 -m http.server` para tener la URL pública.

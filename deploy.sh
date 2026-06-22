@@ -8,7 +8,7 @@ VPS_HOST="72.61.221.201"
 # Carpeta destino en el VPS que sirve el servidor web:
 DEST="/home/${VPS_USER}/sites/protocolo-oxigenoterapia"
 
-SRC="$(cd "$(dirname "$0")" && pwd)/public/"
+SRC="$(cd "$(dirname "$0")" && pwd)/docs/"
 
 echo ">> Sincronizando ${SRC} -> ${VPS_USER}@${VPS_HOST}:${DEST}"
 ssh "${VPS_USER}@${VPS_HOST}" "mkdir -p '${DEST}'"
